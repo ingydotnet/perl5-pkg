@@ -1,4 +1,4 @@
-.PHONY: cpan test
+.PHONY: cpan doc test
 
 NAME := $(shell grep '^name: ' Meta 2>/dev/null | cut -d' ' -f2)
 VERSION := $(shell grep '^version: ' Meta 2>/dev/null | cut -d' ' -f2)
@@ -13,6 +13,9 @@ cpan:
 
 test-cpan: cpan
 	(cd cpan; dzil test) && rm -fr cpan
+
+doc:
+	kwim --pod-cpan doc/$(NAME).kwim > ReadMe.pod
 
 install: distdir
 	(cd $(DISTDIR); perl Makefile.PL; make install)
@@ -35,11 +38,17 @@ release: check-release dist
 	git push --tag
 	rm $(DIST)
 
+fake-release: check-release dist
+	echo cpan-upload $(DIST)
+	echo git tag $(VERSION)
+	echo git push --tag
+	rm $(DIST)
+
 check-release:
 	./.cpan/bin/check-release
 
 clean purge:
-	rm -fr cpan $(DIST) $(DISTDIR)
+	rm -fr cpan .build $(DIST) $(DISTDIR)
 
 upgrade:
 	(PERL5REPO=$(PWD) make -C ../perl5-pkg do-upgrade)
