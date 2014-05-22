@@ -4,6 +4,7 @@ NAME := $(shell grep '^name: ' Meta 2>/dev/null | cut -d' ' -f2)
 VERSION := $(shell grep '^version: ' Meta 2>/dev/null | cut -d' ' -f2)
 DISTDIR := $(NAME)-$(VERSION)
 DIST := $(DISTDIR).tar.gz
+NAMEPATH := $(subst -,/,$(NAME))
 
 default: help
 
@@ -34,7 +35,7 @@ install: distdir
 	make clean
 
 doc:
-	kwim --pod-cpan doc/$(NAME).kwim > ReadMe.pod
+	kwim --pod-cpan doc/$(NAMEPATH).kwim > ReadMe.pod
 
 cpan:
 	./.pkg/bin/make-cpan
